@@ -28,6 +28,11 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        
+        // Ensure native libraries are properly packaged
+        ndk {
+            abiFilters.addAll(listOf("arm64-v8a", "x86_64", "armeabi-v7a", "x86"))
+        }
     }
 
     buildTypes {
@@ -37,6 +42,17 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
+    
+    packagingOptions {
+        resources {
+            excludes += listOf(
+                "lib/x86/libc++_shared.so",
+                "lib/x86_64/libc++_shared.so",
+                "lib/arm64-v8a/libc++_shared.so",
+                "lib/armeabi-v7a/libc++_shared.so"
+            )
+        }
+    }
 }
 
 flutter {
@@ -44,7 +60,13 @@ flutter {
 }
 
 dependencies {
-    // PyTorch Android
+    // Use only PyTorch Lite to avoid duplicate classes
     implementation("org.pytorch:pytorch_android_lite:1.13.1")
     implementation("org.pytorch:pytorch_android_torchvision_lite:1.13.1")
+    
+    // Exclude full PyTorch versions that cause conflicts
+    configurations.all {
+        exclude(group = "org.pytorch", module = "pytorch_android")
+        exclude(group = "org.pytorch", module = "pytorch_android_torchvision")
+    }
 }
