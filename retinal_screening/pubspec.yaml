@@ -36,9 +36,10 @@ dependencies:
   cupertino_icons: ^1.0.8
   
   # PyTorch Mobile for AI inference
-  # Note: pytorch_lite is discontinued but still functional (v4.3.2)
-  # Alternative: Use platform channels with native PyTorch libraries
-  pytorch_lite: ^4.2.0
+  # Using TensorFlow Lite Flutter - Official Flutter support with strong Android backing
+  # Recommended for mobile deployment with GPU and accelerator support
+  # Replaces deprecated pytorch_lite package
+  tflite_flutter: ^0.12.1
   
   # Image handling
   image_picker: ^1.0.7
@@ -83,7 +84,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/models/best_model_mobile.pth
+    - assets/models/ai_edge_versions/model_graphclip_rank1_ai_edge.tflite
     - assets/data/disease_names.json
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -24,7 +24,7 @@ android {
         applicationId = "com.example.retinal_screening"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        minSdk = 26  // Increased from flutter.minSdkVersion for TensorFlow Lite support
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -57,16 +57,4 @@ android {
 
 flutter {
     source = "../.."
-}
-
-dependencies {
-    // Use only PyTorch Lite to avoid duplicate classes
-    implementation("org.pytorch:pytorch_android_lite:1.13.1")
-    implementation("org.pytorch:pytorch_android_torchvision_lite:1.13.1")
-    
-    // Exclude full PyTorch versions that cause conflicts
-    configurations.all {
-        exclude(group = "org.pytorch", module = "pytorch_android")
-        exclude(group = "org.pytorch", module = "pytorch_android_torchvision")
-    }
 }

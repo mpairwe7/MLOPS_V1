@@ -1,6 +1,4 @@
-#!/bin/sh
-'''exec' "/home/darkhorse/Downloads/Compressed/Multi Rentinal Disease Model/venv/bin/python" "$0" "$@"
-' '''
+#!/home/darkhorse/Downloads/MLOPS_V1/venv/bin/python3
 import sys
 from pygments.cmdline import main
 if __name__ == '__main__':

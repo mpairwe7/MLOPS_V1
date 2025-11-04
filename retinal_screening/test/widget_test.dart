@@ -30,7 +30,7 @@ void main() {
     // Verify key UI elements are present
     expect(find.byIcon(Icons.visibility), findsOneWidget);
     expect(find.text('Select Retinal Image'), findsOneWidget);
-    expect(find.text('How it works'), findsOneWidget);
+    expect(find.byIcon(Icons.science), findsOneWidget); // Model test button
   });
 
   testWidgets('Info dialog can be opened', (WidgetTester tester) async {
