@@ -21,8 +21,8 @@ API_PORT=8080
 
 clear
 echo -e "${CYAN}╔════════════════════════════════════════════════════╗${NC}"
-echo -e "${CYAN}║  👁️  Retinal AI Screening - Streamlit Container  ║${NC}"
-echo -e "${CYAN}║     GPU-Accelerated with Local UI Access          ║${NC}"
+echo -e "${CYAN}║     Retinal AI Screening - Streamlit Container     ║${NC}"
+echo -e "${CYAN}║     GPU-Accelerated with Local UI Access           ║${NC}"
 echo -e "${CYAN}╚════════════════════════════════════════════════════╝${NC}\n"
 
 # Step 1: Activate venv and install dependencies
@@ -34,28 +34,28 @@ if [ ! -d "venv" ]; then
 fi
 
 source venv/bin/activate
-echo -e "${GREEN}✅ Activated venv${NC}"
+echo -e "${GREEN} Activated venv${NC}"
 
 # Install streamlit dependencies in venv (for requirements.txt validation)
 pip install -q streamlit plotly 2>/dev/null || true
-echo -e "${GREEN}✅ Dependencies verified${NC}\n"
+echo -e "${GREEN} Dependencies verified${NC}\n"
 
 # Step 2: Stop and remove existing containers
 echo -e "${YELLOW}🧹 Step 2: Cleaning up old containers...${NC}"
 podman stop ${CONTAINER_NAME} 2>/dev/null || true
 podman rm ${CONTAINER_NAME} 2>/dev/null || true
-echo -e "${GREEN}✅ Cleanup complete${NC}\n"
+echo -e "${GREEN} Cleanup complete${NC}\n"
 
 # Step 3: Check GPU availability
 echo -e "${YELLOW}🎮 Step 3: Checking GPU availability...${NC}"
 if command -v nvidia-smi &> /dev/null; then
-    echo -e "${GREEN}✅ NVIDIA GPU detected:${NC}"
+    echo -e "${GREEN} NVIDIA GPU detected:${NC}"
     nvidia-smi --query-gpu=name,memory.total,driver_version --format=csv,noheader | head -1
     USE_GPU=true
     GPU_FLAG="--device nvidia.com/gpu=all"
     GPU_ENV="-e CUDA_VISIBLE_DEVICES=0"
 else
-    echo -e "${YELLOW}⚠️  No NVIDIA GPU detected. Running in CPU mode.${NC}"
+    echo -e "${YELLOW}  No NVIDIA GPU detected. Running in CPU mode.${NC}"
     USE_GPU=false
     GPU_FLAG=""
     GPU_ENV="-e CUDA_VISIBLE_DEVICES=-1"
@@ -67,15 +67,15 @@ echo -e "${YELLOW}🔍 Step 4: Verifying model file...${NC}"
 MODEL_PATH="models/best_model_mobile.pth"
 if [ -f "$MODEL_PATH" ]; then
     MODEL_SIZE=$(du -h "$MODEL_PATH" | cut -f1)
-    echo -e "${GREEN}✅ Model found: $MODEL_SIZE${NC}"
+    echo -e "${GREEN} Model found: $MODEL_SIZE${NC}"
 else
-    echo -e "${RED}❌ Model not found at $MODEL_PATH${NC}"
+    echo -e "${RED} Model not found at $MODEL_PATH${NC}"
     exit 1
 fi
 echo ""
 
 # Step 5: Build or pull image
-echo -e "${YELLOW}🔨 Step 5: Preparing container image...${NC}"
+echo -e "${YELLOW} Step 5: Preparing container image...${NC}"
 
 # Check if image exists
 if podman image exists ${IMAGE_NAME}:latest; then
@@ -87,7 +87,7 @@ if podman image exists ${IMAGE_NAME}:latest; then
         podman rmi ${IMAGE_NAME}:latest 2>/dev/null || true
         BUILD_IMAGE=true
     else
-        echo -e "${GREEN}✅ Using existing image${NC}"
+        echo -e "${GREEN} Using existing image${NC}"
         BUILD_IMAGE=false
     fi
 else
@@ -97,21 +97,21 @@ fi
 if [ "$BUILD_IMAGE" = true ]; then
     echo -e "${YELLOW}Building new image...${NC}"
     podman build -t ${IMAGE_NAME}:latest -f Dockerfile . || {
-        echo -e "${RED}❌ Build failed${NC}"
+        echo -e "${RED} Build failed${NC}"
         exit 1
     }
-    echo -e "${GREEN}✅ Image built successfully${NC}"
+    echo -e "${GREEN} Image built successfully${NC}"
 fi
 echo ""
 
 # Step 6: Create necessary directories
-echo -e "${YELLOW}📁 Step 6: Creating directories...${NC}"
+echo -e "${YELLOW} Step 6: Creating directories...${NC}"
 mkdir -p logs uploads
 chmod 755 logs uploads
-echo -e "${GREEN}✅ Directories ready${NC}\n"
+echo -e "${GREEN} Directories ready${NC}\n"
 
 # Step 7: Run container with Streamlit
-echo -e "${YELLOW}🚀 Step 7: Starting Streamlit container...${NC}"
+echo -e "${YELLOW} Step 7: Starting Streamlit container...${NC}"
 
 podman run -d \
     --name ${CONTAINER_NAME} \
@@ -135,7 +135,7 @@ sleep 3
 
 # Check container status
 if ! podman ps | grep -q ${CONTAINER_NAME}; then
-    echo -e "${RED}❌ Container failed to start${NC}"
+    echo -e "${RED} Container failed to start${NC}"
     echo -e "${YELLOW}Checking logs...${NC}"
     podman logs ${CONTAINER_NAME}
     exit 1
@@ -156,10 +156,10 @@ echo -e "${GREEN}✅ Container started successfully!${NC}\n"
 
 # Display access information
 echo -e "${GREEN}╔════════════════════════════════════════════════════╗${NC}"
-echo -e "${GREEN}║          🎉 Streamlit UI is Running! 🎉           ║${NC}"
+echo -e "${GREEN}║               Streamlit UI is Running!             ║${NC}"
 echo -e "${GREEN}╚════════════════════════════════════════════════════╝${NC}\n"
 
-echo -e "${CYAN}📱 Access Points:${NC}"
+echo -e "${CYAN} Access Points:${NC}"
 echo -e "   ${BLUE}Streamlit UI:${NC} http://localhost:${STREAMLIT_PORT}"
 echo -e "   ${BLUE}API Server:${NC}   http://localhost:${API_PORT}"
 echo -e ""
@@ -181,10 +181,10 @@ echo -e "${YELLOW}Show container logs? (Y/n): ${NC}"
 read -r -t 5 SHOW_LOGS || SHOW_LOGS="y"
 
 if [[ ! $SHOW_LOGS =~ ^[Nn]$ ]]; then
-    echo -e "\n${CYAN}📋 Streaming logs (Ctrl+C to exit, container keeps running):${NC}\n"
+    echo -e "\n${CYAN} Streaming logs (Ctrl+C to exit, container keeps running):${NC}\n"
     sleep 1
     podman logs -f ${CONTAINER_NAME}
 else
-    echo -e "${GREEN}✅ Container running in background${NC}"
+    echo -e "${GREEN} Container running in background${NC}"
     echo -e "${BLUE}Open browser: http://localhost:${STREAMLIT_PORT}${NC}"
 fi
