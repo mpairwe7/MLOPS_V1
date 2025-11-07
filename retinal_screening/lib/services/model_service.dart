@@ -300,10 +300,21 @@ class ModelService {
       
       print('✅ [TFLITE] Inference completed. Output size: ${predictions.length}');
       
-      // Log first few predictions for debugging
-      print('📈 [TFLITE] First 5 outputs: ${predictions.take(5).toList()}');
+      // Log first few predictions for debugging (raw logits)
+      print(
+        '📈 [TFLITE] First 5 raw outputs (logits): ${predictions.take(5).toList()}',
+      );
       
-      return predictions;
+      // Apply softmax to convert logits to probabilities
+      final probabilities = _softmax(predictions);
+      print(
+        '📈 [TFLITE] First 5 probabilities after softmax: ${probabilities.take(5).toList()}',
+      );
+      print(
+        '📊 [TFLITE] Probability sum: ${probabilities.reduce((a, b) => a + b).toStringAsFixed(6)}',
+      );
+
+      return probabilities;
     } catch (e, stackTrace) {
       print('❌ [TFLITE] Inference failed: $e');
       print('📍 [TFLITE] Stack trace:\n$stackTrace');
@@ -326,9 +337,20 @@ class ModelService {
       
       final List<dynamic> predictions = result['predictions'];
       print('📊 [NATIVE] Predictions count: ${predictions.length}');
-      print('📈 [NATIVE] First 5 outputs: ${predictions.take(5).toList()}');
+      print(
+        '📈 [NATIVE] First 5 raw outputs (logits): ${predictions.take(5).toList()}',
+      );
       
-      return predictions;
+      // Apply softmax to convert logits to probabilities
+      final probabilities = _softmax(predictions);
+      print(
+        '📈 [NATIVE] First 5 probabilities after softmax: ${probabilities.take(5).toList()}',
+      );
+      print(
+        '📊 [NATIVE] Probability sum: ${probabilities.reduce((a, b) => a + b).toStringAsFixed(6)}',
+      );
+
+      return probabilities;
     } catch (e, stackTrace) {
       print('❌ [NATIVE] Inference failed: $e');
       print('📍 [NATIVE] Stack trace:\n$stackTrace');
@@ -363,6 +385,29 @@ class ModelService {
     } else {
       return 'Continue regular eye health monitoring. Very low confidence detection.';
     }
+  }
+  
+  // Helper: Apply softmax activation to convert logits to probabilities
+  List<double> _softmax(List<dynamic> logits) {
+    // Find max for numerical stability
+    double maxLogit = logits
+        .map((e) => e.toDouble())
+        .reduce((a, b) => a > b ? a : b);
+
+    // Compute exp(logit - max)
+    List<double> expValues = logits.map((logit) {
+      return exp((logit.toDouble() - maxLogit));
+    }).toList();
+
+    // Compute sum of exp values
+    double sumExp = expValues.reduce((a, b) => a + b);
+
+    // Normalize to get probabilities
+    List<double> probabilities = expValues
+        .map((expVal) => expVal / sumExp)
+        .toList();
+
+    return probabilities;
   }
   
   // Helper: Calculate uncertainty (entropy)
