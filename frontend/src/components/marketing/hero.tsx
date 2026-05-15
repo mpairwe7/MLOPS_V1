@@ -27,7 +27,7 @@ export function Hero() {
         <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-white" />
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20 lg:py-24">
         <div className="grid lg:grid-cols-[1.1fr_1fr] gap-12 lg:gap-16 items-center">
           <div className="max-w-xl">
             <div className="inline-flex items-center gap-2 rounded-full border border-teal-200/70 bg-white/80 backdrop-blur px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm">
